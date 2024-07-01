@@ -37,32 +37,35 @@ proto.route = function route(path) {
 proto.handle = function handle(req, res, out) {
     var self = this;
     var stack = self.stack;
-    var path = getPathname(req);
-
-    // find next matching layer
-    var layer;
-    var match;
-    var route;
     var idx = 0;
 
-    while (match !== true && idx < stack.length) {
-        layer = stack[idx++];
-        match = matchLayer(layer, path);
-        route = layer.route;
+    next();
 
-        if (match !== true) {
-            continue;
+    function next() {
+        var path = getPathname(req);
+
+        // find next matching layer
+        var layer;
+        var match;
+        var route;
+        while (match !== true && idx < stack.length) {
+            layer = stack[idx++];
+            match = matchLayer(layer, path);
+            route = layer.route;
+
+            if (match !== true) {
+                continue;
+            }
+
+            if (!route) {
+                // process non-route handlers normally
+                continue;
+            }
+
+            route.stack[0].handle_request(req, res, next);
         }
-
-        if (!route) {
-            // process non-route handlers normally
-            continue;
-        }
-
-        route.stack[0].handle_request(req, res);
     }
 };
-
 function getPathname(req) {
     try {
         return parseUrl(req).pathname;
