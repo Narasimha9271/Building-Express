@@ -4,6 +4,7 @@ var Router = require("./router");
 var Layer = require("./Layer");
 var slice = Array.prototype.slice;
 var http = require("http");
+var middleware = require("./middleware/init");
 
 var app = (exports = module.exports = {});
 
@@ -41,6 +42,7 @@ app.lazyrouter = function lazyrouter() {
     if (!this._router) {
         this._router = new Router({});
     }
+    this._router.use(middleware.init(this));
 };
 
 app.listen = function listen() {

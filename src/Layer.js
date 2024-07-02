@@ -12,7 +12,12 @@ function Layer(path, options, fn) {
 }
 
 Layer.prototype.match = function match(path) {
-    return this.route.path === path;
+    if (this.route && this.route.path === path) return true;
+    else if (this.name === "expressInit") {
+        return true;
+    }
+
+    return false;
 };
 
 Layer.prototype.handle_request = function handle(req, res, next) {

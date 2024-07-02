@@ -2,16 +2,15 @@ let express = require("./src/express");
 const app = express();
 
 app.get("/", (req, res, next) => {
-    console.log("First middleware called");
-    res.write("I am a Response from the first matching route, Hello world!");
-    next(); // Pass control to the next matching route
+    console.log(next);
+    next();
 });
 
-app.get("/", (req, res, next) => {
-    console.log("Second middleware called");
-    res.write("I am a Response from the second matching route, Hello world2!");
+app.get("/", (req, res) => {
+    res.writeHead(200);
+    res.write("Response from second matching route");
+    res.send("hello world");
     res.end();
-    // No need to call next() here, as we are ending the response
 });
 
 app.post("/post", (req, res) => {

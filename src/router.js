@@ -34,6 +34,15 @@ proto.route = function route(path) {
     return route;
 };
 
+proto.use = function use(fn) {
+    var layer = new Layer("/", {}, fn);
+
+    layer.route = undefined;
+    this.stack.push(layer);
+
+    return this;
+};
+
 proto.handle = function handle(req, res, out) {
     var self = this;
     var stack = self.stack;
@@ -64,8 +73,13 @@ proto.handle = function handle(req, res, out) {
 
             route.stack[0].handle_request(req, res, next);
         }
+        //if match but no route - well call `handle_request`
+        if (match) {
+            layer.handle_request(req, res, next);
+        }
     }
 };
+
 function getPathname(req) {
     try {
         return parseUrl(req).pathname;
